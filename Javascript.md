@@ -200,6 +200,104 @@ String.prototype.reverse = function() {
 
 ## Math functions
 
+`Math.PI`
+`Math.round(9.5);`  // 10
+`Math.ceil(9.5);`  // 10
+`Math.floor(9.5);` // 9
+`Math.abs(-9.5);`  // 9.5
+`Math.pow(10,2);`  // 100 - power of
+`Math.min(0, 9);`
+`Math.max(0, 10);`
+`Math.random();`		 // 0 - 1
+`Math.floor(Math.random() * 10 + 1);` // random number 1 - 10
+
+all trygonomical functions take radians. So you have to transform degrees into radians using:
+```
+function degrees(x){
+	return x/360 * 2 * Math.PI;
+}
+
+Math.sin(degrees(90));      // 1 wow!
+```
+
+## Strings functions
+
+convert to String
+```
+var a = [1,2,3];
+var s = a.toString();    / "1,2,3"
+```
+or 
+
+```
+var i = 99;
+var s = String(i);
+```
+
+string from Unicode values
+`var s = String.fromCharCode(65,66,67);`    // "ABC"
+
+`"abcde".length`  // 5
+
+`s.toLowerCase();`
+`s.toUpperCase():`
+
+joining strings:
+```
+var s = "abcde";
+var i = "12345";
+
+var n = s + i;    // abcde12345
+
+var n = s.concat(i);  // abcde12345
+```
+
+to check character at given index or it's Unicode value:
+```
+var s = "abcde"
+
+s.charAt(0);  // "a"
+s.charCodeAt(0);  // 97
+```
+
+searching for substrings within a string:
+```
+var s = "abracadabra";
+
+s.indexOf("ab");     // 0 or -1 if there is no match
+
+s.lastIndexOf("ab");  // identical, but works from the end
+```
+
+splitting string into an array:
+
+```
+var s = "one,two,three"
+
+s.split(",");   // ["one", "two", "three"], pass "" to separate all characters into an array
+
+s.split("", 3); // ["o", "n", "e"] - second param sets max size of an array
+```
+
+
+## Date and time
+
+```
+var d = new Date();   // inializes a new Date object and sets it to current time/date
+
+var d = new Date("31 Dec 2012 23:59:59 GMT");
+
+var d = new Date(2012,11,31, 23,59, 59);
+```
+
+
+
+
+
+
+
+
+
 
 
 
