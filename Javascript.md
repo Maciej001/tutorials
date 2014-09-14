@@ -689,7 +689,176 @@ Lib.Array = (function() {
 
 ```
 
-Maja
+## Browser API
+
+### Window object
+
+Everything lives in window
+
+`alert("hello!")` is identical to `window.alert("hello!")`
+
+Most importan functions of window object
+
+```
+// window object
+
+// show message
+function ShowMessage(msg) {
+	document.getElementById("message").innerHTML += "<p>"+msg+"</p>";
+}
+
+ShowMessage("window.name: "+window.name);
+ShowMessage("window.innerWidth: "+window.innerWidth);
+ShowMessage("window.innerHeight: "+window.innerHeight);
+ShowMessage("window.outerWidth: "+window.outerWidth);
+ShowMessage("window.outerHeight: "+window.outerHeight);
+ShowMessage("window.screenX: "+window.screenX);	// location of window on screen
+ShowMessage("window.screenY: "+window.screenY);
+	
+window.scrollTo(0, 100);
+ShowMessage("window.pageXOffset: "+window.pageXOffset);
+ShowMessage("window.pageYOffset: "+window.pageYOffset);
+
+var n = window.prompt("What is your name?");
+ShowMessage("Hello "+n);
+
+// print dialog
+// window.print();
+
+// open a new window, that is used very often for popups!!!
+// first argument is window address, if you don't want to go anywhere leave it blank, ie. ""
+// second: window name
+var win = window.open("", "newwin", "width=300,height=300,menubar=0,toolbar=0,resizable=0,screenX=2000,screenY=200");
+
+win.document.body.innerHTML = "<p>Hello World!</p>";
+```
+
+### Location Object
+
+Location is child of a window Object
+
+```
+// location object
+
+// show message
+function ShowMessage(msg) {
+	document.getElementById("message").innerHTML += "<p>"+msg+"</p>";
+}
+
+ShowMessage("window.location: "+window.location);
+
+ShowMessage("window.location.protocol: "+window.location.protocol);  // http or https
+ShowMessage("window.location.hostname: "+window.location.hostname);  // bbc.co.uk
+ShowMessage("window.location.port: "+window.location.port);		// in most cases 80
+ShowMessage("window.location.pathname: "+window.location.pathname); // path + file name being run
+ShowMessage("window.location.search: "+window.location.search); //
+ShowMessage("window.location.hash: "+window.location.hash); // location where we should be jumping
+
+if (window.confirm("Open Google?")) {
+	window.location = "http://www.google.com/";
+}
+```
+
+## The DOM
+
+document is one of the window object core properties
+
+```
+// Document Object Model selectors
+
+console.log( "intro ID", document.getElementById("intro") );  // finds #intro
+
+console.log( "p tags", document.getElementsByTagName("p") );  // returns collection of p nodes in an array
+
+// if you need just first one use:
+document.getElementsByTagName("p")[0];
+
+console.log( "highlight class", document.getElementsByClassName("highlight") ); // all elements witha a given class as an array
+
+// for querySelector use css syntax. It returns only first node found
+console.log( "ul > li", document.querySelector("ul > li") );
+
+// as above but returns collection of all matching nodes
+console.log( "ul > li", document.querySelectorAll("ul > li") );
+
+var header = document.getElementsByTagName("header")[0];
+var ptags = header.getElementsByTagName("p");
+console.log( "header p", ptags );
+```
+
+Collections are live:
+If you have a collection of p tags and you add one, the collection gets automaticaly updated
+
+```
+// Document Object Model navigation
+
+console.clear();
+var n = document.getElementsByTagName("ul")[0];
+console.log( "ul node", n);
+
+console.log( "nodeName", n.nodeName );
+console.log( "nodeType", n.nodeType );  // nodeType == 1 means real element and not whitespace
+
+console.log( "parentNode", n.parentNode );
+
+console.log( "childNodes", n.childNodes );
+
+// .lenght not only grabs <li> elements  but also all whitespaces
+// so if your <ul> element has 3 <li> elements, you will get .length = 7 
+// instead of expected 3!
+
+// to solve this puzzle check the ElementNodes function at the bottom
+
+console.log( "childNodes.length", n.childNodes.length );
+
+console.log( "li childNodes", n.getElementsByTagName("li") );
+
+console.log( "real childNodes", ElementNodes(n.childNodes) );
+
+
+// previousSibling and nextSibling are in most cases whitespaces
+// this is why you have to write your own function Sibling to extract approperiate nodes
+// console.log( "previousSibling", n.previousSibling );
+// console.log( "nextSibling", n.nextSibling );
+
+console.log( "real previousSibling", Sibling(n, "previousSibling") );
+console.log( "real nextSibling", Sibling(n, "nextSibling") );
+
+
+// return real DOM nodelist 
+function ElementNodes(nodelist) {
+	var eNodes = [];
+
+	for (var i=0, j=nodelist.length; i < j; i++) {
+		if (nodelist[i].nodeType == 1) {  // meaning node is a real node and not the whitespace
+			eNodes.push(nodelist[i]);
+		}
+	}
+
+	return eNodes;
+}
+
+
+// return real sibling (or null)
+function Sibling(node, type) {
+
+	do {
+		node = node[type];
+	} while (node && node.nodeType != 1);
+
+	return node;
+
+}
+```
+
+### Changing styles
+
+```
+var e = document.getElementById("myelement")
+
+```
+
+
 
 
 
