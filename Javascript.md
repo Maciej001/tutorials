@@ -856,14 +856,123 @@ function Sibling(node, type) {
 ```
 var e = document.getElementById("myelement")
 
+// use camel case instead of dashes, eg. text-align: 
+e.style.textAlign = "center";
+
+//assigning class .animate
+
+e.setAttribute("class", "animate");  // 1 method
+e.className = "animate";  // 2 method
+
 ```
 
+### Changing content
+
+```
+<p id="myelement"> the paragraph </p>
+
+var p = document.getElementById('myelement');
+
+// p has childNodes and the first node is the text inside so to retrieve the text:
+
+p.childNodes[0].nodeValue    // 'the paragraph' or equivalent
+p.firstChild.nodeValue       // 'the paragraph'
+
+p.firstChild.nodeValue = "I've just changed!"  // to change 'the paragraph'
+
+// Modern browsers provide 
+
+p.textContent = "Yet another change!";  
+p.innerHTML = "Next change!";  // same as above but innerHTML accepts also ... HTML
+p.innerHTML = "<div>Next change!</div>";  // exchanges <p> into new <div> tag
+
+p.outerHTML = "";
+```
+
+### Adding and cloning elements
+
+```
+// Creating new nodes
+var article = document.getElementsByTagName("article")[0];
+
+// append an empty p element. appendChild returns the node that's been just added
+var p = article.appendChild( document.createElement("p") );
+
+// append text
+p.appendChild( document.createTextNode("My "));  // or use just p.textContent = "My "
+
+// append a strong element with text
+p.appendChild( document.createElement("strong") ).appendChild( document.createTextNode("third") );
+
+// append text
+p.appendChild( document.createTextNode(" paragraph.") );
+
+// modify attributes
+p.id = "p3";
+p.setAttribute("style", "font-style:italic;");
 
 
+// It's highly inefficient to add element one by one. The better method is to create the whole structure
+// and then append it to the DOM
+
+// create document fragment
+var f = document.createDocumentFragment();
+var q = f.appendChild( document.createElement("p") );
+q.appendChild( document.createTextNode("My "));
+q.appendChild( document.createElement("strong") ).appendChild( document.createTextNode("fourth") );
+q.appendChild( document.createTextNode(" paragraph.") );
+q.id = "p4";
+
+// append fragment as first child
+article.insertBefore(q, article.firstChild);
+
+// clone node and children and modify
+// passing the true argument means you want to clone all the children nodes as well
+
+var r = q.cloneNode(true);
+r.id = "p5";
+r.appendChild( document.createTextNode(" Again.") );
+
+// append before third p tag
+article.insertBefore(r, article.getElementsByTagName("p")[2]);
+```
+
+There is a trick. Can you insert the same element from memory in multiple places? No you can't.
+Once you insert the element as first paragraph, and then insert as third paragraph, you actually move the 
+element from first to third paragraph.
+But you can do it by cloning the element first. 
 
 
+### Removing DOM elements
+
+```
+var p1 = document.getElementById("p1");  // lets chose first paragraph
+
+p1.parentNode.removeChild(p1);
+
+// you could remove all children eg. of an article -> a
+
+while (a.childNodes.length) {
+	a.removeChild( a.lastChild );
+}
+```
+
+Replacing nodes 
+
+```
+var p1 = document.getElementById("p1");
+var p2 = document.getElementById("p2");
+
+var article = document.getElementsByTagName("article")[0];
+
+article.replaceChild(p2, p1);  // p2 - new node, p1 - the node we want to replace
+```
+
+What happens is that we are left only with node p2, that replaced p1. As any node cannot in exist in two places
+p2 is the only node left.
 
 
+## Event handlers
 
 
 
