@@ -1039,6 +1039,153 @@ function TableHandler(e) {
 
 ### Form events
 
+Can be used for validation of the forms data before submission
+
+IE9 and below does not offer any HTML5 form support at all
+
+``` 
+// form submission event
+// HTML5 browsers will not trigger this event if the form is invalid
+form.addEventListener('submit', validationFunction);    
+
+// form change event is applied to each individual form field
+form.addEventListener('change', validationFunction);    
+
+// key presses - you can prevent user from entering certain characters
+form.addEventListener('keypress', validationFunction);    
+```
+
+### Client side form validation
+
+```
+HTML ************************************
+
+
+		// to remove HTML5 standard form validation use instead of 'required', 'novalidate'
+
+		<fieldset>
+			<legend>Register</legend>
+		
+			<!-- email -->
+			<label for="email">email:</label>
+			<input type="email" id="email" name="email" autofocus required />
+
+			<!-- passwords -->
+			<label for="pass1">password:</label>
+			<input type="password" id="pass1" name="pass1" required />
+			
+			<label for="pass2">again:</label>
+			<input type="password" id="pass2" name="pass2" required />
+
+			<button type="submit">Register</button>
+		
+		</fieldset>
+
+
+Javascript ************************************
+
+// form validation
+
+// DOM nodes
+var form = {
+	register:	document.getElementById("register"),
+	message:  document.getElementById("error_message"),
+	email:		document.getElementById("email"),
+	pass1:		document.getElementById("pass1"),
+	pass2:		document.getElementById("pass2"),
+	strength:	document.getElementById("strength")
+};
+
+
+// form submit
+form.register.addEventListener( "submit", CheckForm );
+
+
+// check email field
+form.email.addEventListener( "change", function(e) {
+	if (e.target.value == "") alert("You forgot the email!");
+} );
+
+
+// stop space character
+form.pass1.addEventListener( "keypress", NoSpaces );
+form.pass2.addEventListener( "keypress", NoSpaces );
+form.email.addEventListener( "keypress", NoSpaces );
+
+// password strength
+
+form.pass1.addEventListener( "keyup", PasswordStrength );
+
+var strtext = ["weak", "average", "strong"];
+var strcolor = ["#c00", "#f80", "#080"];
+
+function PasswordStrength(e) {
+	var pass = form.pass1.value;
+
+	// count uppercase
+	var uc = pass.match(/[A-Z]/g);  // check if contains uppercase - returns array of matching characters
+	uc = (uc && uc.length || 0); // if exists and has length returns 1 else 0
+
+	// count numbers
+	var nm = pass.match(/\d/g);
+	nm = (nm && nm.length || 0);
+
+	// count symbols
+	var sb = pass.match(/\W/g);
+	sb = (sb && sb.length || 0);
+
+	// password strength
+	var s = pass.length + uc + 2*nm + 3*sb;
+
+	// if password is 50 long than floor will give us 5, but we need to know if its strong = 2, or not
+	// below we always will get 0,1 or 2
+	s = Math.min(Math.floor(s/10), 2);
+	console.log(form.pass1.value);
+
+	form.strength.textContent = strtext[s];
+	form.strength.style.color = strcolor[s];
+}
+
+
+// stop spaces being entered
+function NoSpaces(e) {
+	if (e.charCode == 32) e.preventDefault();
+}
+
+
+// form submit validation
+var reEmail = /^[a-z0-9._%-]+@[a-z0-9.-]+\.[a-z]{2,4}$/;
+function CheckForm(e) {
+
+	var msg = "";
+
+	// check email
+	if (!reEmail.test(form.email.value)) {  // validates if email.value fullfils requirements of reEmail regex
+		msg += "<p>your email address</p>";
+	}
+
+	// check passwords
+	if (form.pass1.value == "" || form.pass1.value != form.pass2.value) {
+		msg += "<p>your passwords</p>";
+	}
+
+	// complete message
+	if (msg != "") {
+		msg = "<p>Please check:</p>"+msg;
+	}
+	else {
+		msg = "Form is valid!\nSubmitting...";
+	}
+
+	e.preventDefault();
+	form.message.innerHTML = msg;
+
+	
+
+}
+```
+
+###
 
 
 
