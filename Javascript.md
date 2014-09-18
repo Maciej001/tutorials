@@ -974,6 +974,71 @@ p2 is the only node left.
 
 ## Event handlers
 
+Event handler is a function. One event object is passed to this function. You need to analyse the object and
+perform the relevant actions.
+
+Event handle may execute other function:
+* prevent default action, eg. clicking link, prevents redirecting to the new page
+* prevent event to "bubble up"
+* deregister event, so it will never run again
+
+You can assign as many event to the single element as you wish
+
+#### Event delegation
+
+If parent has 100 child elements it doesn't make much sense to attache click event handler to every single 
+one of them. So it's better if the child gets clicked the event 'bubbles up' and reaches parent, so the event
+handler can be run and event object tells which of child elements got clicked.
+
+```
+// find first link on the page
+var link = document.getElementsByTagName("a")[0];
+
+// delegate event handler
+link.addEventListener( "click", MyEventHandler );
+
+// event handler
+function MyEventHandler(e) {
+
+	alert("ouch!");
+	e.preventDefault();    // e.currentTarget <- object that was had event applied, eg. clicked
+												 // e.target -> element, the current event is applied to 
+}
+```
+
+
+Multiplication table
+```
+// find table
+var table = document.getElementById("multiplication");
+var tcols = table.getElementsByTagName("col");
+
+// delegate event handler
+table.addEventListener( "mouseover", TableHandler );
+table.addEventListener( "mouseout", TableHandler );
+
+// event handler
+function TableHandler(e) {
+
+	var t = e.target;
+	if (t.nodeName != "TD") return;    // we are interested only in cells, multiplication results
+	
+	var cName = ( e.type == "mouseover" ? "active" : "");  // assign class
+	t.parentNode.className = cName;		// parent node is the whole row
+	tcols[ t.cellIndex ].className = cName;   // cellIndex returns column number
+
+	
+	// the same as 3 lines above, just a bit shorter oneliner
+	// t.parentNode.className = tcols[ t.cellIndex ].className =
+	// ( e.type == "mouseover" ? "active" : "");
+	
+}
+```
+
+## Forms
+
+### Form events
+
 
 
 
