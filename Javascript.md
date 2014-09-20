@@ -1180,12 +1180,632 @@ function CheckForm(e) {
 	e.preventDefault();
 	form.message.innerHTML = msg;
 
-	
-
 }
 ```
 
-###
+## Animation
+
+### Timer and animation
+
+```
+// bouncing ball using setTimeout
+var
+	body = document.getElementsByTagName("body")[0],
+	ball = document.getElementById("ball");
+var
+	bx = ball.offsetLeft, by = ball.offsetTop, 
+	bw = ball.offsetWidth, bh = ball.offsetHeight,
+	dx = 5, dy = 5, active = true;
+
+
+// move ball	
+function AnimateBall() {
+
+	bx += dx;
+	by += dy;
+	ball.style.left = bx + "px";
+	ball.style.top = by + "px";
+	
+	if (bx + dx < 0 || bx + bw + dx > body.offsetWidth) dx = -dx;
+	if (by + dy < 0 || by + bh + dy > body.offsetHeight) dy = -dy;
+	
+	if (active) setTimeout(AnimateBall, 10);
+	
+}
+
+// start animation after 1 second
+var st = setTimeout(AnimateBall, 1000);
+
+// stop ball on click, passing the st variable, that was returned by setTimeout
+ball.addEventListener( "click", function() { clearTimeout(st); active = false; } );
+```
+
+Instead of calling the function every 10ms use setInterval, so it gets called every 10ms
+
+```
+// bouncing ball using setInterval
+var
+	body = document.getElementsByTagName("body")[0],
+	ball = document.getElementById("ball");
+var
+	bx = ball.offsetLeft, by = ball.offsetTop, 
+	bw = ball.offsetWidth, bh = ball.offsetHeight,
+	dx = 5, dy = 5, active = true;
+
+
+// move ball	
+function AnimateBall() {
+
+	bx += dx;
+	by += dy;
+	ball.style.left = bx + "px";
+	ball.style.top = by + "px";
+	
+	if (bx + dx < 0 || bx + bw + dx > body.offsetWidth) dx = -dx;
+	if (by + dy < 0 || by + bh + dy > body.offsetHeight) dy = -dy;
+	
+}
+
+// start animation
+var st = setInterval(AnimateBall, 10);
+
+// stop ball on click
+ball.addEventListener( "click", function() { clearInterval(st); } );
+```
+
+## Ajax
+
+Asynchronous JavaScript and XML
+
+XML - Extensible Markup Language, losing popularity
+
+most common technique is XMLHttpRequest introduced in IE5. For security reasons it only alows you to contact
+server that is on the same domain.
+
+another funcion is XMLHttpRequest2 that allows you to check the progress bar.
+
+
+### Form with ajax html response
+
+Below form sends the request to the server and once the server responds with simple html it just 
+displays the simple html on the page.
+
+HTML
+```
+<form id="speedform" action="http://localhost/js/speedconvert.php" method="get">
+	<fieldset>
+	<legend>Speed conversion</legend>
+	
+	<label for="speed">Speed:</label>
+	<input type="text" id="speed" name="speed" value="0" />
+	
+	<select type="text" id="unit" name="unit">
+		<option value="mph">miles per hour</option>
+		<option value="kph">kilometers per hour</option>
+		<option value="fps">feet per second</option>
+		<option value="mps">meters per second</option>
+	</select>
+	
+	<input type="hidden" name="format" value="html" />
+	
+	<button type="submit">Convert</button>
+	
+	</fieldset>
+</form>
+
+<div id="output">
+
+	<table>
+		<tr><th>mph</th><td>0.00</td></tr>
+		<tr><th>kph</th><td>0.00</td></tr>
+		<tr><th>fps</th><td>0.00</td></tr>
+		<tr><th>mps</th><td>0.00</td></tr>
+	</table>
+
+</div>
+```
+
+Javascript
+```
+// XMLHttpRequest
+var Lib = Lib || {};
+
+Lib.Ajax = (function() {
+
+	// hijack form
+	// Hijack digests the data from form, creates the args array and calls Call function that
+	// actually executes ajax request
+
+	function Hijack(form, callback) {
+	
+		var args = {};
+		
+		for (var i = 0; i < form.elements.length; i++) {
+			var f = form.elements[i];
+			if (f.name) args[f.name] = f.value;
+		}
+
+		// make Ajax call
+		Call(form.action, args, form.method, callback);
+	
+	}
+
+	// call web service - executes ajax request by building the list of all necessary parameters
+	function Call(url, args, type, callback) {
+
+		// check type (GET or POST) and  if empty use GET
+		type = (type || "GET").toUpperCase();
+	
+		// create argument list
+		args = args || {};   // empty object if no args delivered
+		var arglist = "";
+		for (var n in args) {   // equivalent of each, loops thru all arguments in args array
+			arglist += "&" + n + "=" + escape(args[n]);
+		}
+
+		// why do we take the first argument only?
+		// arglist is a string "...&1=argrument&2="
+
+		if (arglist.length > 0) arglist = arglist.substr(1);  // substr removes first &
+		
+		// append args to GET URL
+		if (type == "GET") {
+			url += "?" + arglist;
+			arglist = null;
+		}
+		
+		// XMLHttpRequest object
+		var xhr = new XMLHttpRequest();
+		xhr.open(type, url, true);
+		
+		// callback function
+		if (callback) {
+			xhr.onreadystatechange = function() {
+				if (xhr.readyState == 4 && xhr.status == 200) {    // 200 server answers OK!
+					callback(xhr.responseText);
+				}
+			};
+		}
+		
+		// open request and sets headers
+		xhr.setRequestHeader("Content-Type","application/x-www-form-urlencoded; charset=UTF-8");
+		xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
+
+		// finally sends request. server responds with just html
+		xhr.send(arglist);
+
+	}
+
+	return {
+		Hijack: Hijack,
+		Call: Call
+	};
+
+}());
+
+// start
+var
+	speedform = document.getElementById("speedform"),
+	output = document.getElementById("output");
+
+// form submit - direct to Ajax call
+speedform.addEventListener("submit", function(e) {
+	e.preventDefault();
+	Lib.Ajax.Hijack(speedform, function(r) {
+		
+		output.innerHTML = r;
+		
+	});
+});
+
+```
+
+or if you would like to parse the returned data as jason 
+
+```
+// start
+var
+	speedform = document.getElementById("speedform"),
+	output = document.getElementById("output"),
+	td = output.getElementsByTagName("td");
+
+// form submit - direct to Ajax call
+speedform.addEventListener("submit", function(e) {
+	e.preventDefault();
+	Lib.Ajax.Hijack(speedform, function(r) {   // function is run when the data is returned
+		
+		r = JSON.parse(r);
+		td[0].textContent = r.mph;
+		td[1].textContent = r.kph;
+		td[2].textContent = r.fps;
+		td[3].textContent = r.mps;
+		
+	});
+});
+```
+
+## HTML5 API
+
+IE8 and below do not support HTML5
+
+Apple chose h.264 as standard video codec
+
+### Creating customer controlled buttons for VIDEO play and pause
+
+```
+	<article>
+
+		<video id="bunny" poster="videos/bunny.jpg">  // controls="controls" adds standard HTML5 controls
+			<source src="videos/bunny.mp4" type="video/mp4" />
+			<source src="videos/bunny.webm" type="video/webm" />
+		</video>
+
+		<div id="controls">
+			<a id="play" href="#">Play</a>
+			<span id="timer">0%</span>
+		</div>
+
+	</article>
+
+<script>
+var
+	video = document.getElementById("bunny"),
+	play = document.getElementById("play"),
+	timer = document.getElementById("timer"),
+	update;
+
+video.addEventListener("click", PlayVideo, false); // will play video when the video itself is clicked
+play.addEventListener("click", PlayVideo, false);  // will play video when play button is clicked
+
+// play or pause video
+function PlayVideo(e) {
+
+	e.preventDefault();
+
+	if (video.paused) {
+
+		video.play();
+		play.textContent = "Pause";
+
+		update = setInterval( function() {
+			timer.textContent = Math.round(video.currentTime / video.duration * 100) + "%";
+		}, 500);
+
+	}
+	else {
+
+		video.pause();
+		play.textContent = "Play";
+
+		if (update) clearInterval(update);
+
+	}
+
+}
+</script>
+```
+
+
+### Canvas
+
+```
+<article>
+
+		<canvas id="mycanvas" width="300" height="300"></canvas>
+
+	</article>
+
+<script>
+var canvas = document.getElementById("mycanvas");
+
+if (canvas.getContext) {
+
+	var cxt = canvas.getContext("2d");
+
+	// define default styles
+	cxt.lineWidth = 6;
+	cxt.strokeStyle = "#333";
+	cxt.fillStyle = "#c00";
+
+	// lines
+	// below methods set the path but only .stroke() draws it
+	cxt.beginPath();
+	cxt.moveTo(0,0);
+	cxt.lineTo(150,150);
+	cxt.lineTo(100,200);
+	cxt.bezierCurveTo(300,150,0,0,200,300);
+	cxt.stroke();  
+
+	// clear top-left square
+	cxt.clearRect(0,0,50,50);
+
+	// circle
+	cxt.beginPath();
+	cxt.arc(200,80,50,0,Math.PI*2);
+	cxt.fill();
+	cxt.stroke();
+
+}
+
+</script>
+```
+
+#### Canvas rain
+
+```
+	<article>
+
+		<canvas id="mycanvas" width="1000" height="800"></canvas>
+
+	</article>
+
+<script>
+var canvas = document.getElementById("mycanvas");
+if (canvas.getContext) {
+
+	// start animation
+	var cxt = canvas.getContext("2d");
+	cxt.fillStyle = "rgba(255,255,255,0.5)";
+	
+	setInterval(function() {
+		var	x = Math.round(Math.random()*canvas.width), 
+			y = Math.round(Math.random()*canvas.height),
+			e = 20 + Math.round(Math.random()*100),           // e = <0,50>
+			s = 0;
+		
+		(function() {
+			s++;
+			if (s <= e) {
+				setTimeout(arguments.callee,s);
+				var c = 255-(e-s)*3;
+				cxt.strokeStyle = "rgb("+c+","+c+","+c+")";
+				cxt.beginPath();
+				cxt.arc(x,y,s,0,Math.PI*2,true);
+				cxt.fill();
+				cxt.stroke();
+			}
+		})();
+	},100);
+
+}
+</script>
+```
+
+### SVG - Scalable Vector Graphics
+
+SVG are great for charts, diagrams and logos
+
+You can create them in any external program like inkScape
+
+Every SVG is XML document, so it exposes the DOM which you can manipulate by changing attributes
+of DOM elements.
+
+```
+<article>
+
+		<object id="mysvg" type="image/svg+xml" data="images/image.svg"></object>
+
+	</article>
+
+<script>
+var mysvg = document.getElementById("mysvg");
+var svg = mysvg.contentDocument;
+
+var line = svg.getElementById("line");
+
+// animate line
+var y = 10;
+(function() {
+	y += 2;
+	line.setAttributeNS(null,"y1",y);
+	line.setAttributeNS(null,"y2",300-y);
+	if (y < 290) setTimeout(arguments.callee, 20);
+}());
+
+// create rectangle
+var rect = svg.createElementNS("http://www.w3.org/2000/svg", "rect");
+
+rect.setAttributeNS(null,"x",100);
+rect.setAttributeNS(null,"y",125);
+rect.setAttributeNS(null,"width",100);
+rect.setAttributeNS(null,"height",50);
+rect.setAttributeNS(null,"fill","#393");
+
+svg.getElementById("main").appendChild(rect);
+
+</script>
+```
+
+
+### Geolocation
+
+```
+	<article>
+
+		<div id="geo"></div>
+
+	</article>
+
+<script src="http://maps.google.com/maps/api/js?sensor=false"></script>
+<script>
+var geo = document.getElementById("geo");
+
+// do geolocation
+if (navigator.geolocation) {
+	// pass success function and fail function when browser does not support geolocation or user declined the request
+	navigator.geolocation.getCurrentPosition(geoSuccess, geoFailed);
+}
+else {
+	geo.textContent = "Sorry - your browser does not support geolocation.";
+}
+
+// geolocation successful
+function geoSuccess(position) {
+	/*
+		latitude = position.coords.latitude
+		longitude = position.coords.longitude
+		accuracy (meter radius) = position.coords.accuracy
+	*/
+	
+	var latlng = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
+	var mapOpts = {
+		zoom: 13,
+		center: new google.maps.LatLng(position.coords.latitude, position.coords.longitude),
+		mapTypeControl: false,
+		navigationControlOptions: { style: google.maps.NavigationControlStyle.SMALL },
+		mapTypeId: google.maps.MapTypeId.ROADMAP
+	};
+	var map = new google.maps.Map(geo, mapOpts);
+
+}
+
+// geolocation failed
+function geoFailed() {
+	geo.textContent = "Sorry - geolocation failed.";
+}
+</script>
+```
+
+
+### Files upload
+
+```
+
+	<article>
+	
+		<form id="upload" action="#" method="get">
+
+			<fieldset>
+
+				<div>
+					<label for="fileselect">Files to upload:</label>
+					<input type="file" id="fileselect" name="fileselect[]" multiple="multiple" />
+				</div>
+				
+				<div id="filedrop">or drop files here</div>
+
+			</fieldset>
+
+		</form>
+	
+		<h2>File information:</h2>
+		<div id="output"></div>
+
+	</article>
+
+<script>
+// output information
+function Output(msg) {
+	var m = document.getElementById("output");
+	m.innerHTML = msg + m.innerHTML;
+}
+
+
+// drop box hover effect
+function FileHover(e) {
+	e.preventDefault();
+	e.target.className = (e.type == "dragover" ? "hover" : "");
+}
+
+
+// file selection
+function FileSelect(e) {
+	FileHover(e);
+	
+	// file select box returns targe.files property and dropbox .dataTransfer.files list
+	var files = e.target.files || e.dataTransfer.files;
+
+	// process all files and pass each file reference to ParseFile
+	for (var i = 0, f; f = files[i]; i++) {
+		ParseFile(f);
+	}
+
+}
+
+
+// output file information
+function ParseFile(file) {
+
+	// file information
+	Output(
+		"<p>File information: <strong>" + file.name +
+		"</strong> type: <strong>" + file.type +
+		"</strong> size: <strong>" + file.size +
+		"</strong> bytes</p>"
+	);
+
+	// display an image
+	// check if file is an image
+	if (file.type.indexOf("image") == 0) {
+		var reader = new FileReader();   // and instantiate FileReader object
+		reader.onload = function(e) {    // when the file is loaded to the memory
+			Output(
+				"<p><strong>" + file.name + ":</strong><br />" + 
+				'<img src="' + e.target.result +
+				'" /></p>'
+			);
+		}
+		reader.readAsDataURL(file);
+	}
+
+	// display text - identical to the above code. The only difference is that we read the file as text
+	if (file.type.indexOf("text") == 0) {
+		var reader = new FileReader();
+		reader.onload = function(e) {
+			Output(
+				"<p>" + file.name +
+				": <p><pre>" + e.target.result +
+				"</pre>"
+			);
+		}
+		reader.readAsText(file);
+	}
+
+}
+
+
+// initialization
+// let's check if the below objects are available. If not there is no point to continue
+if (window.File && window.FileList && window.FileReader) {
+	
+	// select box used
+	var fileselect = document.getElementById("fileselect");
+	fileselect.addEventListener("change", FileSelect, false);
+	
+	// drop box used
+	var filedrop = document.getElementById("filedrop");
+	filedrop.addEventListener("dragover", FileHover, false);
+	filedrop.addEventListener("drop", FileSelect, false);
+	
+}
+</script>
+```
+
+### Webworkers 
+
+Webworkers are JS equivalents of threading
+They don't work in IE9 and below. Additionally they cannot axess the DOM
+
+You can communicate with webworker by sending only single parameter. It can be an object or an array.
+
+
+## Persistence and Storage
+
+### Cookies
+
+Web is stateless. Every request is independent. Cookies allow as to save state.
+Cookies are domain specific. So one domain cannot access cookies of the other domain
+
+Session cookies are deleted after the session is closed. If you don't save time for cookies to expire they 
+automatically become session cockies.
+
+You cannot delete cookies in JS, but you can set expiry time.
+Each domain can have upto 20 cookies 4k max each.
+
+Better use jQuery
+
+
+
 
 
 
