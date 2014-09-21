@@ -382,32 +382,26 @@ $(window).height()
 ## Manipulating HTML
 
 ```
-	<article>
+<article>
+
+	<p>In this chapter we will discover how to get and set:</p>
+	<ul>
+		<li>attributes</li>
+		<li>CSS properties</li>
+		<li>form values</li>
+		<li>element text</li>
+		<li>HTML5 element data</li>
+		<li>element positions</li>
+	</ul>
 	
-		<p>In this chapter we will discover how to get and set:</p>
-		<ul>
-			<li>attributes</li>
-			<li>CSS properties</li>
-			<li>form values</li>
-			<li>element text</li>
-			<li>HTML5 element data</li>
-			<li>element positions</li>
-		</ul>
-		
-		<p>as well as:</p>
-		<ul>
-			<li>wrapping HTML elements</li>
-			<li>copying HTML elements</li>
-			<li>deleting HTML elements</li>
-		</ul>
-	</article>
+	<p>as well as:</p>
+	<ul>
+		<li>wrapping HTML elements</li>
+		<li>copying HTML elements</li>
+		<li>deleting HTML elements</li>
+	</ul>
+</article>
 
-	<footer>
-		<p><a href="http://www.infiniteskills.com/">&copy; InfiniteSkills</a></p>
-		<p><a href="http://craigbuckler.com/">By Craig Buckler</a></p>
-	</footer>
-
-<script src="../resources/script/jquery.js"></script>
 <script>
 
 // add new paragraph as last child node
@@ -429,8 +423,325 @@ a.replaceWith("<li>CSS positions</li>");
 </script>
 ```
 
+### Wrapping elements
+
+```
+// wrap div around every paragraph
+$("p").wrap("<div>");
+
+// put all paragraph child nodes into an em
+$("p").wrapInner("<em>");
+
+// put all paragraphs into a single section
+// it scans the whole website for paragraphs and puts all of them in one section, then it places
+// the section where the first paragraph was
+$("p").wrapAll("<section>");
+```
+
+### Cloning elements
+
+Can be useful for cloning HTML table rows when dynamically created
+
+```
+// clone elements
+var p = $("footer p").clone();
+
+// and place elsewhere
+$("header").append( p );
+```
+
+### Removing elements 
+```
+// remove elements and all children
+$("footer").remove();
+
+// remove child nodes but retain selected elements
+$("article").empty();
+
+// remove parent (container) node. Wrapper is remove but content remains
+$("h1").unwrap();
+```
 
 
+## Events
+
+Event handler is a function that runs as soon as the event occurs
+Event handler is passed just one event object.
+
+### When DOM loads
+
+`$(Setup);` - once the DOM is ready run the function Setup or 
+```
+$(function(){
+	do something
+});
+```
+`$('#my_image').load(function() { do something });` // execute the function after image has been loaded
+
+### Bind events
+
+```
+// change class when mouse moved over/out
+// bind allows to specify more then one event 
+$("#e1").bind("mouseenter mouseleave", function(e) { 
+	$(this).toggleClass("over");
+});
+
+$("#e1").mouseenter(function(){})  // do something on mouseenter
+
+```
+
+`mouseenter` and `mouseleave` don't fire the event when the mouse hovers over child element
+
+```
+// disable a link click
+$("a#google").click(function(e) {
+	this.href = "http://bing.com";  // why this not $(this)
+});
+
+// check a form on submit
+$("#myform").submit(function(e) {
+	var n = $("#yourname").val();
+	if (n == "") {
+		alert("Please enter your name...");
+	}
+	else {
+		alert("Hello "+n+"!");
+	}
+	return false;
+	});
+```
+#### Difference between $(this) and this
+
+`$(this)[0] === this`  // jQuery returns set of elements
+`$()` is jQuery constructor function. 
+`this` is a reference to the DOM element of invocation.
+So passing `this` to `$()` as parameter so that you could call jQuery methods and functions
+
+### Event object
+
+```
+e.target 	 // element that triggered the event even if it had to bubble higher to get serviced
+e.currentTarget  // element that the event is attached originally 
+
+e.preventDefault()  // prevents default behaviour, eg. redirection by a element
+e.stopPropagation() // stops the event from bubbling higher in DOM
+
+return false  is equivalent to preventDefault + stopPropagation at the same time
+```
+
+
+### Delegation live events
+
+When you attach event handlers to elements in DOM structure they exists only on elements that
+where in DOM when the website opened. So how to add event handlers to elements that hass been attached 
+dynamically.
+
+```
+$('ul#list li').click(function(e){
+	var ul = $(this).parent();
+	ul.append("<li>New item " + ul.children().length+1 + "</li>");
+});
+
+// using live method
+// live method is a bit inefficient because it attaches itself to the root document!
+$('ul#list li').live("click", function(e){
+		var ul = $(this).parent();
+		ul.append("<li>New item " + ul.children().length+1 + "</li>");
+	});
+
+// often better option is to use delegate method
+// bind it to parent element and pass the context 'li' in the function
+$('ul#list').delegate("li","click", function(e){
+		var ul = $(this).parent();
+		ul.append("<li>New item " + ul.children().length+1 + "</li>");
+	});
+```
+
+### Triggering events
+
+```
+$('#list').trigger('click');
+```
+
+### Deregistering Events
+```
+// run when DOM is ready
+$(function() {
+
+	// prevent link click
+	$("a#google").click(GoogleClick);
+	
+	function GoogleClick(e) {
+		alert("Try again...");
+		
+		// deregister event
+		$(this).unbind("click", GoogleClick);
+
+		return false;
+	}
+
+
+	// attach event to all existing and new list items in ul#list
+	$("ul#list").delegate("li", "click", ListItemClick);
+	
+	function ListItemClick(e) {
+		var ul = $(e.target).parent();
+		var c = ul.children().length+1;
+		ul.append("<li>new item "+c+"</li>");
+		if (c > 4) {
+		
+			// deregister event
+			$(ul).undelegate("li", "click", ListItemClick);
+			
+		}
+	}
+	
+});
+
+
+// to unbind all events:
+$('*').unbind();
+
+```
+
+## jQuery Array methods
+```
+var a = [1,2,3];
+
+$.isArray(a);		// check if is array?
+
+$.inArray(1,a); // check if 1 is in a; if successful returns index, if not returns -1
+
+// create an array from collection of node elements
+var p = document.getElementByTagName('p');
+var myArray = $.makeArray(p);
+
+$.merge(a, b);		// merges second array into the first, duplicates are maintained
+$.extend(a, b);		// merges second object or array into the first, but duplicates are overwritten!
+
+$("p").each( function(index, element) {
+	console.log( "paragraph ", index, "element: ", element);
+});
+
+$.each( [1,2,3], function(index, element) {
+	console.log( "item at index ", index, " is ", element );
+});
+
+var a = ['a', 'b', 'c'];
+var b = $.map(a, function(index, element){
+	return element+index;
+});
+```
+
+
+## AJAX
+
+```
+$('element').ajax();  // rarely to be used
+$('element').load(url); // url is the url + query; as response you will get eg. html
+
+// Ajax call
+	$.getJSON(ws, args, Process);   // webservice url, list of arguments and callback function
+
+
+// parse Ajax response
+function Process(data) {
+
+	var html = "";
+	$.each(data, function(index, value) {
+		html += "<p><strong>"+index+"</strong>: "+value+"</p>";
+	});
+	
+	$("#output").empty().append(html);
+	
+	console.log( "kph: ", data.kph );
+
+}
+
+```
+
+### Ajax errors
+ 
+When doing ajax request you should show gif spinner, so the user knows, he waits for something.
+In most cases it will be very quick delivery, so the user even does not notice the delay, 
+but somtimes, server will not respond or it will time out.
+
+```
+$(document).ajaxError(Failure);
+
+// ajax failure
+function Failure() {
+
+	$("#output").empty().append("<p>An Ajax error occurred.</p>");
+}
+```
+
+If you want to controll error more precisely you have to use .ajax funtion
+
+```
+// Ajax call (setting error handler)
+$.ajax(ws, {
+	data: args,
+	dataType: format,
+	success: Process,
+	error: Failure				// error handler function
+});
+
+```
+
+## Plugin
+
+```
+/*
+ * jQuery text reversing plugin
+ * usage: $(selector).reverseText();
+ * optional arguments:
+ *		min: ignore shorter text strings
+ *      max: ignore larger text strings
+ * e.g. $(selector).reverseText({ min:5, max:10});
+ * You can also apply class="reverse" to any HTML element.
+ */
+ 
+(function($) {
+
+	// define new plugin function
+	// expecting single parameter params we expect javascript object (key, value)
+	$.fn.reverseText = function(params) {
+	
+		// override default parameters
+		// and overwrite our defaults with users' choices
+		params = $.extend( { min: 0, max: 99999 }, params);
+		
+		// iterate all elements; each is the jQuery object that was passed, eg. all paragraphs
+		this.each(function() {
+		
+			var e = $(this);  // this is every single elemnt that we loop through
+			var txt = e.text();
+			
+			if (txt.length >= params.min && txt.length <= params.max) {
+			
+				// reverse the text
+				e.text( txt.split("").reverse().join("") );
+			
+			}
+		
+		});
+		
+		// return jQuery object
+		return this;
+	
+	};
+
+	// auto-run
+	// you don't have to call the function on collection on elements
+	// just add .reverse class and the plugin will check it automaticaly and call the 
+	// reverseText function on each elements that contain .reverse class!!!
+	
+	$(".reverse").reverseText();
+	
+})(jQuery);
+```
 
 
 
