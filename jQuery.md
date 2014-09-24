@@ -744,6 +744,45 @@ $.ajax(ws, {
 ```
 
 
+# jQuery from novice to ninja
+
+## Building elements
+
+```
+// add image after link was clicked
+$('<img>')
+	.attr('src', $(this).attr('href'))
+	// load fires when image is fully loaded
+	.load(function(){
+		positionLightboxImage();
+	})
+	// remove image
+	.click(function{
+		removeLightbox();
+	})
+	.appendTo('#lightbox');
+
+// alternative way
+$('<img>', {
+	src: $(this).attr('href'),
+	load: function() {
+		positionLightboxImage();
+	}
+	click: function(){
+		removeLightbox();
+	}
+}).appendTo('#lightbox');
+
+return false; // to prevent the default behavior
+
+```
+
+### Simple lightbox 
+Click on photo, background goes dark and photo shows up, click again and everything disapears
+
+
+
+
 
 
 
