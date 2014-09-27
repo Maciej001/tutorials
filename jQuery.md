@@ -990,6 +990,57 @@ $(function(){
 ```
 
 
+### Templating
+
+```
+<table id="cart">
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Qty.</th>
+      <th>Total</th>
+    </tr>
+  </thead>
+  <tr class="template" style="display:none;">
+    <td><span class="item_name">Name</span></td>
+    <td><span class="item_qty">Quantity</span></td>
+    <td><span class="item_total">Total</span>.00</td>
+  </tr>
+</table>
+
+// row - jQ selection of the row
+// cart - object containing item name, quantity and total price
+
+
+// helper function that fills the new row with cart object
+function template( row, cart ) {
+  row.find( '.item_name' ).text( cart.name );
+  row.find( '.item_qty' ).text( cart.qty );
+  row.find( '.item_total' ).text( cart.total );
+  return row;
+}
+
+$(function(){
+
+  // Every time you click h2, new row is created and added to #cart
+  $('#content h2').click(function(){
+    var newRow = $( '#cart .template' ).clone().removeClass( 'template' );
+    var cartItem = {
+      name:     'Glendatronix',
+      qty:      Math.floor(Math.random() * 10),
+      total:    450
+    };
+
+    template( newRow, cartItem )
+      .appendTo( '#cart' )
+      .fadeIn();
+  })
+});
+```
+
+
+### Ajax 
+
 
 
 
