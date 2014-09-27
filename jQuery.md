@@ -777,10 +777,174 @@ return false; // to prevent the default behavior
 
 ```
 
-### Simple lightbox 
-Click on photo, background goes dark and photo shows up, click again and everything disapears
+### Fade one image into the other
+
+```
+<span id="fader">
+  <img id="glenda" src="../../images/glenda_200.jpg" alt="Glendatronix"/>
+  <img class="to" src="../../images/fader_200.jpg" />
+</span>
+
+$(function(){
+	$('#fader').hover(function(){
+		// stop - stops the animation
+		// stop uses 2 params: clearQueue and goToEnd. 
+		// clearQueue == true clears all the queued animatinos on the element
+		// goToEnd == true moves immediately the animation state to the end.
+		$( this ).find( 'img:eq(1)' ).stop( true, true ).fadeIn( 250 );
+	},
+	function(){
+		$( this ).find( 'img:eq(1)' ).fadeOut( 250 );
+	});
+});
+```
 
 
+### Fade in collection of images
+
+bit abrupt
+
+
+```
+<div id="photos">
+  <img alt="Glendatronix" class="show" src="../../images/glenda_200.jpg" />
+  <img alt="Darth Fader" src="../../images/fader_200.jpg" />
+  <img alt="Beau Dandy" src="../../images/beau_200.jpg" />
+  <img alt="Johnny Stardust" src="../../images/johnny_200.jpg" />
+  <img alt="Mo' Fat" src="../../images/mofat_200.jpg" />
+</div>
+
+$(function(){
+	slideShow();
+});
+
+function slideShow() {
+	var current = $('#photos .show');
+	// if next() exists (has length?) fine if not take the first element
+	var next = current.next().length ? current.next() : current.siblings().first();
+
+	current.hide().removeClass('show');
+	next.fadeIn(1000).addClass('show');
+
+	setTimeout(slideShow, 1000);
+}
+
+```
+
+### Simple menu slide down sublist and slide up 
+
+```
+<div id="celebs">
+	<h2 class="heading">Our Celebrities</h2>
+	<p class="info">
+		We have an ever changing roster of newly chipped celebrities. But it can take as little as a week for the little critters to realise they've been tagged - so you have to be fast! 
+	</p>
+  <ul id="accordion">
+  	<li class="active">
+  		A-List Celebrities
+  		<ul>
+  			<li><a href="#">Computadors</a> &nbsp;New!</li>
+        <li><a href="#">Johny Stardust</a></li>
+  		  <li><a href="#">Beau Dandy</a></li>
+      </ul>
+  	</li>
+  	<li>
+  		B-List Celebrities
+  		<ul>
+  			<li><a href="#">Sinusoidal Tendancies</a></li>
+  			<li><a href="#">Steve Extreme</a></li>
+  		</ul>
+  	</li>
+  	<li>
+  		Has Beens
+  		<ul>
+  			<li>Duran Duran Duran</li>
+  			<li>Mike's Mechanic</li>
+  		</ul>
+  	</li>
+  	<li>
+  		Barely Famous Celebrities
+  		<ul>
+  			<li>Lardy Dah</li>
+  			<li>Rove Live</li>
+  		</ul>
+  	</li>
+  </ul> 
+</div>
+
+$(function(){
+  $('#celebs ul > li ul')
+    .click(function(){
+        // after it's down we don't want ul to be clickable and pass the click to it's parrent
+        $(this).stopPropagation();
+      })
+    // filter out first element; first submenu should be open and all other hidden
+    // filter - any elements that match the criteria are discarded
+    // $(':not(p)') - all not paragraphs
+    // $('p:not(.active)')
+    // or function
+    // we have access to zero based index of each element in the collection
+    // $('p').filter(function(index) {
+    //    return index == 2 || $(this).hasClass(.active);
+    // })
+    .filter(':not(:first)')
+    .hide();
+    
+  $('#celebs ul > li').click(function(){
+    // let's store if clicked li > ul is already visible
+    var selfClick = $(this).find('ul:first').is(':visible');
+
+    if (!selfClick) {
+      // so we clicked other then visible, let's hide all other visible first
+      $(this)
+        .parent()
+        .find('> li ul:visible')
+        .slideToggle();
+    }
+
+    $(this)
+      .find('ul:first')
+      .slideToggle();
+  })
+})
+```
+
+### Simple Tabs
+
+```
+<ul id="info-nav">
+  <li><a href="#intro">Intro</a></li>
+  <li><a href="#about">About Us</a></li>
+  <li><a href="#disclaimer">Disclaimer</a></li>
+</ul>
+<div id="info">
+	<p id="intro">
+		Welcome to <strong>StarTrackr!</strong> the planet's premier celebrity tracking and monitoring service. Need to know where in the world the best bands, musicians or producers are within 2.2 square meters? You've come to the right place. We have a very special special on B-grade celebs this week, so hurry in!		
+	</p>
+  <p id="about">
+    StarTrackr! was founded in early 2009 when a young entrepreneur from Los Angeles discovered a way to tag people with GPS-enabled RFID tags without their knowledge. Being from LA, his first thought was to use this technology to enable fans to track and locate their favourite celebrities. And thus the phenomenon was born!
+  </p>
+	<p id="disclaimer">
+		Disclaimer! This service is not intended for the those with criminal intent. Celebrities are kind of like people so their privacy should be respected.
+	</p>
+</div>
+
+$(function(){
+	$('#info p:not(:first)').hide(); // hide all paragraphs other then first one
+
+	$('#info-nav li').click(function(e){
+		e.preventDefault();
+
+		$('#info p').hide();		// hide all paragaraphs
+		$('#info-nav .current').removeClass('current');
+		$(this).addClass('current');	// add current class to li from navigation
+
+		var clicked = $(this).find('a:first').attr('href');  // find href attribute of clicked link
+		$('#info ' + clicked).fadeIn('fast');		// fade in paragraph with id = clicked
+
+	}).eq(0).addClass('current');
+});
+```
 
 
 
