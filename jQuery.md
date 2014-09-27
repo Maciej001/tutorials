@@ -946,6 +946,49 @@ $(function(){
 });
 ```
 
+### Slide down and up Login Panel
+
+```
+<div id="login">
+  <a href="#">Log in</a>
+  <form action="">
+    <div>
+      <label for="username">Username:</label>
+      <input name="username" id="username" type="text"/>
+    </div>
+    <div>
+      <label for="password">Password:</label>
+      <input name="password" id="password" type="password"/>
+    </div>
+    <div>
+    	<input type="submit" value="Log in!" />
+  	</div>
+  </form>
+</div>
+
+$(function(){
+  $('#login form').hide();
+
+  $('#login a').toggle(function(){
+    $(this)
+      .addClass('active')
+      .next('form')
+      .slideDown();
+  },
+    function(){
+      $(this)
+        .removeClass('active')
+        .next('form')
+        .slideUp();
+    }
+  );  // end of toggle
+
+  $('#login form :submit').click(function(){
+    $('#login a form').slideUp();
+  });
+});
+```
+
 
 
 
