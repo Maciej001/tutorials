@@ -1040,6 +1040,124 @@ $(function(){
 
 
 ### Ajax 
+For security reasons content that you load via ajax must be stored on the same server
+
+`$('div:first').load('test.html');` grabs HTML from the server and inserts everything that is inside body into an element
+
+Be carefull with `load()`, as it can be used to load an event
+
+```
+<div id="celebs">
+	<h2 class="heading">Our Celebrities</h2>
+	<p class="info">
+		We have an ever changing roster of newly chipped celebrities. But it can take as little as a week for the little critters to realise they've been tagged - so you have to be fast! 
+	</p>
+	<ul>
+    <li><a href="baronVonJovi.html">Baron von Jovi</a></li>
+    <li><a href="computadors.html">The Computadors</a></li>
+    <li><a href="darthFader.html">Darth Fader</a></li>
+    <li><a href="moFat.html">Mo' Fat</a></li>
+  </ul>
+  <div id="biography">
+    Click on a celeb above to find out more!
+  </div>
+</div>
+
+$(document).ready(function(){
+  $('#celebs ul a').click(function(e) {
+  	e.preventDefault();
+
+    var url = $(this).attr('href');
+    $('#biography').load(url);
+    
+  })
+});
+```
+
+There is better method. It allows to load just elements that match the selector
+
+`('#biography').load('computadors.html div:first')`  only first div from computadors.html will be loaded
+
+!!! will not work in Chrome due to 'Same Origin Policy'
+
+Additionally still the WHOLE page is LOADED!!!
+
+
+Calling `.load` with string will execute GET request:
+$('div#results').load('search.php', 'q=jQuery&maxResults=10');
+
+Passing an object will perform POST request. 
+
+Additionally you can do processing using the callback function, when the data is returned. 
+Thre parameters:  repsonse text(actual data), string containing the status of the response, full response object itself
+
+`$('div#result').load('feed.php', function(data, status, response){ ... post processing ... });
+
+If you are attaching functions to dynamically added elements use `.on()` function.
+`live()` and `die()` functions have been depreceted.
+
+
+```
+
+// pointing at children 'p' is optional
+$('#biography')
+	.on('click' , 'p' ,function(){
+		$(this).css('background-color', 'red');
+	});
+
+// to unbind
+
+$('#biography').off('click', 'p');
+
+// or if you attached named function you can pass it as 3rd parameter
+
+$('#biography').off('click', 'p', myFunction);
+
+```
+
+
+####  .ajax()
+```
+$.ajax({
+	type: 'GET',
+	url:	'getDetails.php',
+	data:	{ id: 142 },
+	success: function(data) {		// success callback
+		// grabbed some data!
+	}
+});
+
+```
+
+Sometimes it might help to set the ajax settings
+```
+$.ajaxSetup({
+		type:		'POST',
+		url:		'send.php',
+		timeout:	3000
+});
+```
+
+### Loading External Scripts with $.getScript
+
+Instead of loading all scripts at the beginning you can call them later.
+$.getScript will load and execute JS via Ajax.
+
+When the page loads we can load just minimum amount of code and then only pull in 
+further files as we need them.
+
+This is very usefull when you need to use plugins.
+
+When making Ajax requests, a number of events are fired.
+
+
+
+
+
+
+
+
+
 
 
 

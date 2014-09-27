@@ -34,6 +34,8 @@
 # Rails
 
 # Great design
+* [Building Medium](http://www.teehanlax.com/story/medium/)
+* [Clinkle](https://www.clinkle.com/)
 
 # Great startup
 * [Mailcloud](https://www.mailcloud.com)
