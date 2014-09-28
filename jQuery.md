@@ -32,7 +32,7 @@ jQuery finds elements from right to left.
 `$('p').slice(2,4)`	- elements from index 2 to 4
 `$('p').slice(1)`		- all elements from 2nd to the end of array
 
-.filter
+.filter - filters are very slow!
 
 ```
 $("p").filter(".myclass"); 	// only element with class "myclass"
@@ -1151,8 +1151,36 @@ This is very usefull when you need to use plugins.
 When making Ajax requests, a number of events are fired.
 
 
+## Forms
+
+```
+<form action="" id="myform">
+  <div>
+    <label for="name">Name:</label>
+    <input name="name" id="name" type="text"/>
+  </div>
+  <div>
+    <label for="email">Email:</label>
+    <input name="email" id="email" type="text"/>
+  </div>    
+  <div>
+  	<input type="submit" value="Submit" />
+	</div>
+</form>
 
 
+// on submit the function will check if text fields are filled. if not border will be changed to red.
+$(function(){
+	$('#myform').submit(function(event){
+		$('input[type="text"]').each(function(){
+			if(!$(this).val().length) {
+				event.preventDefault();
+				$(this).css('border','2px solid red');
+			}
+		});
+	});
+});
+```
 
 
 
