@@ -1182,6 +1182,192 @@ $(function(){
 });
 ```
 
+Use of `:checked` and `:selected`
+
+`if ($(this).is(':checked'));`
+
+jQ `$(':input')` selects all form fields
+
+Using the same form check if form on lost focus is filled if not highlight it
+```
+$(function(){
+  $(':input').blur(function(){
+    if($(this).val().length == 0) {
+      $(this)
+        .addClass('error')
+        .after('<span class="error">Field cannot be empty</span>');
+    }
+  });
+
+  $(':input').focus(function(){
+    $(this)
+      .removeClass('error')
+      .next('span')
+      .remove();
+  });
+});
+```
+
+Easy validation with [jQuery validate](http://jqueryvalidation.org/documentation/)
+
+```
+$(document).ready(function(){
+  $('#signup form').validate({
+    rules: {
+      name: {
+        required: true
+      },
+      email: {
+        required: true,
+        email: true
+      },
+      website: {
+        url: true
+      },
+      password: {
+        minlength: 6,
+        required: true
+      },
+      passconf: {
+        equalTo: "#password"
+      }
+    },
+    success: function(label) {
+      label.text('OK!').addClass('valid');
+    }
+  });
+});
+```
+
+We have textarea with class .maxlength. Let's add span that will show how many chars are left. limit 140 chars.
+
+```
+$('.maxlength')
+  .after('<span></span>')
+  .next()  // we move to span now
+  .hide()
+  .end()  // moves us back to last element - textarea
+  .keypress(function(event){ // function that counts characters left
+    var char_number = $(this).val().length
+    var key = event.keyCode || event.charCode;
+    
+    if(char_number >= 140) {
+      if (key != 0 && key != 46 && key != 8)  {// delete(0) and backspace(8) codes
+        event.preventDefault();
+      }
+    }
+
+    $(this).next().show().text(140-char_number);
+});
+```
+
+Checking all the checkbox using 'Check all'
+
+```
+<form action="">
+  <div class="stats">
+    <h2 class="title">Reason for Celebrity</h2>
+    <input name="reason" type="checkbox" value="net" />Famous on the Internet<br/>
+    <input name="reason" type="checkbox" value="crim" />Committed a crime<br />
+    <input name="reason" type="checkbox" value="model" />Dates a supermodel<br />
+    <input name="reason" type="checkbox" value="tv" />Hosts a TV show<br />
+    <input name="reason" type="checkbox" value="japan" />Big in Japan<br />
+    <hr />
+    <input class="check-all" type="checkbox" /><span>Check all</span>
+    <br/>
+		<input type="submit" value="Submit" class="submit" />
+  </div>
+</form> 
+
+$(function(){
+	$('.check-all').change(function(){
+		var group = 'input:checkbox[name="reason"]';
+		$(group).attr('checked', this.checked);
+	});
+});
+```
+
+Other method of biding few event handlers in one go, by wrapping them in an object:
+
+```
+$('element').bind({
+	hover: function(e){
+
+	},
+	click: function(e){
+
+	}
+});
+```
+
+### Inline editing of title and paragraph
+
+```
+<h3 id="celeb-143-name" class="editable">Glendatronix</h3>
+<p id="celeb-143-intro" class="editable-area">
+  When ...
+</p>
+
+$(function(){
+	
+	$('.editable, .editable-area')
+		// when hover over editable element it should change the background
+		// to lightyellow
+		.hover(function(){
+			$(this).toggleClass('over-inline');
+		})
+
+		// only when clicked edit is possible
+		.click(function(){
+			var $editable = $(this);
+			var content = removeWhitespaces($editable);
+			
+			// save the content to local storage
+			localStorage.setItem('editable', JSON.stringify(content));
+
+			$editable 
+				// add the active class so we know editing is underway
+				.addClass('active-inline')
+				.empty();
+
+			// insert form editing element depending if we are editing
+			// h3 -> .editable or,
+			// p  -> .editable-area
+			var editElement = $editable.hasClass('editable') ?
+			'<input type="text"></input>' : '<input type="textarea"></textarea>';
+
+			$(editElement)
+				.val(content)
+				.appendTo($editable)
+				.focus()
+				// manually trigger blur function on blur()
+				.blur(function(){		
+					$editable.trigger('blur');
+				})
+		})
+		.blur(function(){
+			var $editable = $(this);
+
+			var edited_text = $editable.find(':first-child').val();
+			// save just in case to local storage
+			localStorage.setItem('editable', JSON.stringify(edited_text));
+			$editable
+				.find('input')
+
+				// remove textarea and put edited_text inside paragraph
+				// in real app would be nice to put text separated by enters into separate paragraphs.
+				// check location 4800 in the book
+				.replaceWith(edited_text);
+		})
+});
+
+function removeWhitespaces($obj) {
+	return $.trim( $obj.html().replace(/(\t|\n)/g,"") );
+}
+```
+
+
+
 
 
 
