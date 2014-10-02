@@ -2,6 +2,9 @@
 * [Sitepoint tutorials](http://sitepoint.com)
 * [Javascript Weekly](http://javascriptweekly.com/)
 
+# Coffeescript 
+* [Better JS with CoffeeScript - Sam Stephenson ](http://vimeo.com/35258313)
+
 ## Blogs
 
 * [John Resig](http://ejohn.org/)
@@ -28,6 +31,7 @@
 
 # Susy
 * [CSS tricks](http://css-tricks.com/build-web-layouts-easily-susy/)
+* [Susy tutorial](http://www.zell-weekeat.com/)
 
 # Ruby 
 
@@ -36,6 +40,7 @@
 # Great design
 * [Building Medium](http://www.teehanlax.com/story/medium/)
 * [Clinkle](https://www.clinkle.com/)
+* [Design process](http://harkmylord.com/college-app.html)
 
 # Great startup
 * [Mailcloud](https://www.mailcloud.com)

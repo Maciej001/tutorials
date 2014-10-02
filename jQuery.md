@@ -1366,7 +1366,25 @@ function removeWhitespaces($obj) {
 }
 ```
 
+### Star rating
 
+```
+<form action="">
+  <div id="my_stars">
+    <i class="fa fa-star-o" value="1"></i>
+    <i class="fa fa-star-o" value="2"></i>
+    <i class="fa fa-star-o" value="3"></i>
+    <i class="fa fa-star-o" value="4"></i>
+    <i class="fa fa-star-o" value="5"></i>
+  </div>
+  <div>
+    <input type="submit" value="Submit Rating" />
+  </div>
+</form>
+
+
+
+```
 
 
 
