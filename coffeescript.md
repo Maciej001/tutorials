@@ -110,6 +110,10 @@ name = person.name
 [first, last] = person.name.split " "
 ```
 
+## Compiling
+
+`coffee -cwo public/js - w src/` - compiles src/ folder into public/js with the whole folders' structure
+
 
 
 

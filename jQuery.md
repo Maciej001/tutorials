@@ -1382,9 +1382,57 @@ function removeWhitespaces($obj) {
   </div>
 </form>
 
+$(function(){
+  // $stars -> contains star icons
+  var $stars = $('#my_stars');
+  $stars
+    .on('mouseenter', 'i.fa', function(){
+      var _star = $(this);
 
+      // entering means reset the 'rated' class and value on container
+      $stars
+        .removeClass('rated')
+        .attr('value', 0);
+
+      // remove yellow stars
+      _star
+        .siblings()
+        .removeClass('fa-star')
+        .addClass('fa-star-o')
+
+      // add yellow stars for yourself and all preceding stars
+      _star
+        .prevAll()
+        .andSelf()
+        .removeClass('fa-star-o')
+        .addClass('fa-star')
+    })
+    .on('mouseleave','i.fa', function(){
+      var _star = $(this);
+
+      // if it's not rated reset stars to empty
+      // it is rated only when you clicked
+      if (!$stars.hasClass('rated')) {
+        _star
+          .siblings()
+          .andSelf()
+          .removeClass('fa-star')
+          .addClass('fa-star-o');
+      }
+    })
+    .on('click', 'i.fa', function(){
+      // when clicked add rated class and add rating in value field  
+      var rating = $(this).attr('value');
+      $stars
+        .addClass('rated')
+        .attr('value', rating);
+    })
+});
 
 ```
+
+Maciek
+
 
 
 
