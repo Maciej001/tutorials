@@ -102,4 +102,11 @@ todos.forEach(function(model){
 })
 ```
 
+`<%= %>` - variable interpolation 
+`<%- %>` - interpolate variable and have it HTML-escaped
+`<% %>` - execute arbitrary javascript code
+
+
+
+
 
